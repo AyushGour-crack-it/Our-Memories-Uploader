@@ -77,15 +77,20 @@
           mediaType: selectedKind === 'other' ? 'little-things' : selectedKind,
           memoryDate: dateField.value,
           caption: noteField.value,
-        }, session, (stage) => {
+        }, session, (stage, detail) => {
           const stageNames = {
             uploading: 'Uploading',
             checking: 'Checking whether the file arrived',
             retrying: 'Connection hiccup · retrying the file',
+            resumable: 'Preparing a resumable video upload',
             saving: 'Saving memory details for',
             'checking-row': 'Checking whether the memory was saved',
             'retrying-row': 'Connection hiccup · retrying memory details for',
           };
+          if (stage === 'upload-progress') {
+            say(status, `Uploading ${detail}% · ${index + 1} of ${files.length}: ${file.name}`);
+            return;
+          }
           say(status, `${stageNames[stage] || 'Saving'} ${index + 1} of ${files.length}: ${file.name}`);
         });
         saved += 1;

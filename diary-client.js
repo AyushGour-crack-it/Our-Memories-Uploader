@@ -2,6 +2,14 @@
   const MAX_FILE_SIZE = 50 * 1024 * 1024;
   const BUCKET = 'diary-media';
   const config = window.DIARY_CONFIG || {};
+  const resumableEndpoint = (() => {
+    try {
+      const projectUrl = new URL(config.supabaseUrl);
+      const project = projectUrl.hostname.match(/^([^.]+)\.supabase\.co$/);
+      const storageOrigin = project ? `https://${project[1]}.storage.supabase.co` : projectUrl.origin;
+      return `${storageOrigin}/storage/v1/upload/resumable`;
+    } catch { return null; }
+  })();
   const configured = Boolean(
     config.supabaseUrl &&
     config.publishableKey &&
@@ -29,6 +37,35 @@
     error.uncertainSave = true;
     return error;
   };
+
+  const uploadResumably = (file, storagePath, contentType, accessToken, onProgress) => new Promise((resolve, reject) => {
+    const TusUpload = window.tus?.Upload;
+    if (!TusUpload || window.tus?.isSupported === false || !resumableEndpoint) {
+      reject(new Error('Resumable video upload could not start. Refresh the uploader and try again.'));
+      return;
+    }
+    try {
+      const upload = new TusUpload(file, {
+        endpoint: resumableEndpoint,
+        retryDelays: [0, 3000, 5000, 10000, 20000],
+        headers: { authorization: `Bearer ${accessToken}` },
+        uploadDataDuringCreation: true,
+        storeFingerprintForResuming: false,
+        removeFingerprintOnSuccess: true,
+        metadata: {
+          bucketName: BUCKET,
+          objectName: storagePath,
+          contentType,
+          cacheControl: '3600',
+        },
+        chunkSize: 6 * 1024 * 1024,
+        onError: reject,
+        onProgress: (uploaded, total) => onProgress(total ? Math.min(100, Math.floor(uploaded / total * 100)) : 0),
+        onSuccess: resolve,
+      });
+      upload.start();
+    } catch (error) { reject(error); }
+  });
 
   const getMemberSession = async () => {
     const supabaseClient = requireConfigured();
@@ -108,19 +145,35 @@
       catch (caught) { error = caught; }
       if (!error && data?.signedUrl) return true;
       if (isNetworkFailure(error)) throw uncertainNetworkError('checking whether the file arrived');
-      return false;
+      if (!error || /not found|404/i.test(`${error.statusCode || ''} ${error.message || ''}`)) return false;
+      throw error;
     };
 
-    onStage('uploading');
-    let { error: uploadError } = await attemptUpload();
-    if (uploadError && isNetworkFailure(uploadError)) {
-      if (await verifyStoredFile()) uploadError = null;
-      else {
-        onStage('retrying');
-        ({ error: uploadError } = await attemptUpload());
-        if (uploadError && (isNetworkFailure(uploadError) || isDuplicateError(uploadError))) {
-          if (await verifyStoredFile()) uploadError = null;
-          else throw uncertainNetworkError('retrying the file upload');
+    const shouldUseResumable = metadata.mediaType === 'video' || file.size >= 6 * 1024 * 1024;
+    let uploadError = null;
+    if (shouldUseResumable) {
+      onStage('resumable');
+      try {
+        await uploadResumably(file, storagePath, contentType, session.access_token, (percent) => onStage('upload-progress', percent));
+      } catch (error) { uploadError = error; }
+      if (uploadError) {
+        if (await verifyStoredFile()) uploadError = null;
+        else if (isNetworkFailure(uploadError)) {
+          throw new Error('The video connection kept dropping, even with resumable retries. The video was not saved; try Wi-Fi or a steadier connection, then upload it again.');
+        }
+      }
+    } else {
+      onStage('uploading');
+      ({ error: uploadError } = await attemptUpload());
+      if (uploadError && isNetworkFailure(uploadError)) {
+        if (await verifyStoredFile()) uploadError = null;
+        else {
+          onStage('retrying');
+          ({ error: uploadError } = await attemptUpload());
+          if (uploadError && (isNetworkFailure(uploadError) || isDuplicateError(uploadError))) {
+            if (await verifyStoredFile()) uploadError = null;
+            else throw uncertainNetworkError('retrying the file upload');
+          }
         }
       }
     }

@@ -10,3 +10,7 @@ This is a standalone, self-contained website dedicated to adding memories to the
 4. Add this site's Vercel URL to Supabase Auth’s redirect allowlist.
 
 Only use the Supabase publishable key here. Never add a secret or `service_role` key. Invite only the two diary members. Members sign in separately on each site because their browser sessions are kept per-site.
+
+## Upload behavior
+
+Videos and files at least 6 MB use Supabase's TUS resumable upload protocol with 6 MB chunks, progress reporting, and automatic retries for interrupted connections. Smaller photos use the regular upload path with a safe retry and a check for files that arrived even when the browser lost the response. All files remain limited to 50 MB by the uploader and the private bucket.
