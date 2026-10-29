@@ -16,6 +16,20 @@
     return client;
   };
 
+  const isNetworkFailure = (error) => {
+    const message = `${error?.name || ''} ${error?.message || ''} ${error?.cause?.message || ''}`.toLowerCase();
+    return ['failed to fetch', 'networkerror', 'network request failed', 'load failed', 'fetch failed'].some((phrase) => message.includes(phrase));
+  };
+
+  const isDuplicateError = (error) => String(error?.statusCode || error?.code || '').includes('409') ||
+    ['duplicate', 'already exists', 'unique constraint'].some((phrase) => `${error?.name || ''} ${error?.message || ''}`.toLowerCase().includes(phrase));
+
+  const uncertainNetworkError = (stage) => {
+    const error = new Error(`The connection dropped while ${stage}. Check the diary before trying again so we don’t save the same memory twice.`);
+    error.uncertainSave = true;
+    return error;
+  };
+
   const getMemberSession = async () => {
     const supabaseClient = requireConfigured();
     const { data: sessionData, error: sessionError } = await supabaseClient.auth.getSession();
@@ -76,12 +90,40 @@
     const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_').slice(-120) || 'memory-file';
     const storagePath = `${session.user.id}/${crypto.randomUUID()}-${safeName}`;
     const contentType = file.type || 'application/octet-stream';
-    onStage('uploading');
-    const { error: uploadError } = await supabaseClient.storage.from(BUCKET).upload(storagePath, file, {
+    const storage = supabaseClient.storage.from(BUCKET);
+    const uploadOptions = {
       cacheControl: '3600',
       contentType,
       upsert: false,
-    });
+    };
+    const attemptUpload = async () => {
+      try { return await storage.upload(storagePath, file, uploadOptions); }
+      catch (error) { return { error }; }
+    };
+    const verifyStoredFile = async () => {
+      onStage('checking');
+      let data;
+      let error;
+      try { ({ data, error } = await storage.createSignedUrl(storagePath, 60)); }
+      catch (caught) { error = caught; }
+      if (!error && data?.signedUrl) return true;
+      if (isNetworkFailure(error)) throw uncertainNetworkError('checking whether the file arrived');
+      return false;
+    };
+
+    onStage('uploading');
+    let { error: uploadError } = await attemptUpload();
+    if (uploadError && isNetworkFailure(uploadError)) {
+      if (await verifyStoredFile()) uploadError = null;
+      else {
+        onStage('retrying');
+        ({ error: uploadError } = await attemptUpload());
+        if (uploadError && (isNetworkFailure(uploadError) || isDuplicateError(uploadError))) {
+          if (await verifyStoredFile()) uploadError = null;
+          else throw uncertainNetworkError('retrying the file upload');
+        }
+      }
+    }
     if (uploadError) throw uploadError;
 
     const row = {
@@ -96,18 +138,40 @@
       created_by: session.user.id,
     };
 
-    onStage('saving');
-    const { data, error: rowError } = await supabaseClient
-      .from('memories')
-      .insert(row)
-      .select('id')
-      .single();
+    const insertRow = async () => {
+      try { return await supabaseClient.from('memories').insert(row).select('id').single(); }
+      catch (error) { return { data: null, error }; }
+    };
+    const findSavedRow = async () => {
+      onStage('checking-row');
+      let existing;
+      let lookupError;
+      try {
+        ({ data: existing, error: lookupError } = await supabaseClient
+          .from('memories').select('id').eq('storage_path', storagePath).maybeSingle());
+      } catch (error) { lookupError = error; }
+      if (lookupError && isNetworkFailure(lookupError)) throw uncertainNetworkError('checking whether the memory was saved');
+      if (lookupError) throw lookupError;
+      return existing;
+    };
 
-    if (rowError) {
-      await supabaseClient.storage.from(BUCKET).remove([storagePath]);
-      throw rowError;
+    onStage('saving');
+    let result = await insertRow();
+    if (result.error && (isNetworkFailure(result.error) || isDuplicateError(result.error))) {
+      let existing = await findSavedRow();
+      if (!existing && isNetworkFailure(result.error)) {
+        onStage('retrying-row');
+        result = await insertRow();
+        if (result.error && (isNetworkFailure(result.error) || isDuplicateError(result.error))) existing = await findSavedRow();
+      }
+      if (existing) return existing;
+      if (result.error && (isNetworkFailure(result.error) || isDuplicateError(result.error))) throw uncertainNetworkError('saving the memory details');
     }
-    return data;
+    if (result.error) {
+      await storage.remove([storagePath]);
+      throw result.error;
+    }
+    return result.data;
   };
 
   window.DiaryClient = {

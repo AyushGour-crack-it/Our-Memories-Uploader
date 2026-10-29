@@ -77,7 +77,17 @@
           mediaType: selectedKind === 'other' ? 'little-things' : selectedKind,
           memoryDate: dateField.value,
           caption: noteField.value,
-        }, session, (stage) => say(status, `${stage === 'uploading' ? 'Uploading' : 'Saving'} ${index + 1} of ${files.length}: ${file.name}`));
+        }, session, (stage) => {
+          const stageNames = {
+            uploading: 'Uploading',
+            checking: 'Checking whether the file arrived',
+            retrying: 'Connection hiccup · retrying the file',
+            saving: 'Saving memory details for',
+            'checking-row': 'Checking whether the memory was saved',
+            'retrying-row': 'Connection hiccup · retrying memory details for',
+          };
+          say(status, `${stageNames[stage] || 'Saving'} ${index + 1} of ${files.length}: ${file.name}`);
+        });
         saved += 1;
       }
       say(status, `${saved} ${saved === 1 ? 'memory is' : 'memories are'} safely in the diary. The main diary may ask you to sign in there separately.`);
