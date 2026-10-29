@@ -7,6 +7,7 @@
   const selection = document.querySelector('#upload-selection');
   const fileInput = document.querySelector('#memory-files');
   const dropZone = document.querySelector('#upload-drop');
+  const dropHint = document.querySelector('#upload-drop-hint');
   const signOut = document.querySelector('#diary-signout');
   const diaryLinks = [document.querySelector('#back-to-diary-top'), document.querySelector('#back-to-diary')].filter(Boolean);
   const kinds = [...document.querySelectorAll('.upload-category')];
@@ -19,7 +20,15 @@
   const types = { photo: 'image/*', video: 'video/*', voice: 'audio/*', other: '' };
   const renderSelection = () => {
     const files = [...fileInput.files]; selection.replaceChildren();
-    if (!files.length) { selection.textContent = 'No files picked yet.'; return; }
+    if (dropHint) dropHint.textContent = selectedKind === 'other'
+      ? 'Optional for little things · attach a file or leave it empty to write an envelope note.'
+      : 'or drag your files here · multiple files welcome · 50 MB max each';
+    if (!files.length) {
+      selection.textContent = selectedKind === 'other'
+        ? 'No file needed for a little note. Add a title, date, and message to make an envelope.'
+        : 'No files picked yet.';
+      return;
+    }
     const shelfName = selectedKind === 'voice' ? 'voice note' : selectedKind === 'other' ? 'little thing' : selectedKind;
     const summary = document.createElement('span'); summary.textContent = `${files.length} ${files.length === 1 ? 'file' : 'files'} selected for the ${shelfName} shelf · up to 50 MB each:`;
     const list = document.createElement('ul');
@@ -62,8 +71,14 @@
   });
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
-    const files = [...fileInput.files];
-    if (!files.length) return say(status, 'Choose at least one little memory first.', true);
+    let files = [...fileInput.files];
+    if (!files.length && selectedKind === 'other') {
+      if (!titleField.value.trim() || !dateField.value || !noteField.value.trim()) {
+        return say(status, 'A little letter needs a title, a date, and the message you want to keep.', true);
+      }
+      files = [new File([noteField.value.trim()], 'little-letter.txt', { type: 'text/plain' })];
+    }
+    if (!files.length) return say(status, 'Choose a file first, or choose “little thing” to write a note-only envelope.', true);
     if (!session) return say(status, 'Please sign in with an invited account first.', true);
     try { files.forEach(validate); } catch (error) { return say(status, error.message, true); }
     const saveButton = form.querySelector('.upload-save'); saveButton.disabled = true;
@@ -79,6 +94,7 @@
           caption: noteField.value,
         }, session, (stage, detail) => {
           const stageNames = {
+            'checking-duplicate': 'Checking whether this voice note is already saved',
             uploading: 'Uploading',
             checking: 'Checking whether the file arrived',
             retrying: 'Connection hiccup · retrying the file',

@@ -31,6 +31,14 @@
   const isDuplicateError = (error) => String(error?.statusCode || error?.code || '').includes('409') ||
     ['duplicate', 'already exists', 'unique constraint'].some((phrase) => `${error?.name || ''} ${error?.message || ''}`.toLowerCase().includes(phrase));
 
+  const duplicateVoiceMessage = () => new Error('This exact voice note is already in our diary, so I did not save it again.');
+
+  const sha256 = async (file) => {
+    if (!window.crypto?.subtle?.digest) throw new Error('This browser cannot check voice-note duplicates securely. Update your browser and try again.');
+    const digest = await window.crypto.subtle.digest('SHA-256', await file.arrayBuffer());
+    return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, '0')).join('');
+  };
+
   const uncertainNetworkError = (stage) => {
     const error = new Error(`The connection dropped while ${stage}. Check the diary before trying again so we don’t save the same memory twice.`);
     error.uncertainSave = true;
@@ -124,7 +132,28 @@
     if (file.size > MAX_FILE_SIZE) throw new Error('This free diary accepts files up to 50 MB. Choose a smaller copy; this file has not been uploaded.');
 
     const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_').slice(-120) || 'memory-file';
-    const storagePath = `${session.user.id}/${crypto.randomUUID()}-${safeName}`;
+    let storagePath;
+    if (metadata.mediaType === 'voice') {
+      onStage('checking-duplicate');
+      const contentHash = await sha256(file);
+      storagePath = `voice/${contentHash}`;
+      const { data: exactMatch, error: exactError } = await supabaseClient
+        .from('memories').select('id,title').eq('storage_path', storagePath).maybeSingle();
+      if (exactError) throw exactError;
+      if (exactMatch) throw duplicateVoiceMessage();
+
+      // Older voice notes predate content-addressed paths. Match the same original
+      // filename and size as a helpful legacy duplicate check; renaming a genuinely
+      // different recording still works, while the hash path catches exact copies.
+      const { data: legacyMatches, error: legacyError } = await supabaseClient
+        .from('memories').select('id,title,storage_path').eq('media_type', 'voice')
+        .eq('original_name', file.name).eq('file_size', file.size).limit(20);
+      if (legacyError) throw legacyError;
+      const legacyMatch = (legacyMatches || []).find((memory) => !memory.storage_path.startsWith('voice/'));
+      if (legacyMatch) throw new Error(`A voice note named “${file.name}” with this size is already in the diary. If this is a different recording, rename the file and try again.`);
+    } else {
+      storagePath = `${session.user.id}/${crypto.randomUUID()}-${safeName}`;
+    }
     const contentType = file.type || 'application/octet-stream';
     const storage = supabaseClient.storage.from(BUCKET);
     const uploadOptions = {
@@ -176,6 +205,10 @@
         }
       }
     }
+    if (uploadError && metadata.mediaType === 'voice' && isDuplicateError(uploadError)) {
+      if (await verifyStoredFile()) uploadError = null;
+      else throw duplicateVoiceMessage();
+    }
     if (uploadError) throw uploadError;
 
     const row = {
@@ -209,15 +242,20 @@
 
     onStage('saving');
     let result = await insertRow();
-    if (result.error && (isNetworkFailure(result.error) || isDuplicateError(result.error))) {
+    if (result.error && metadata.mediaType === 'voice' && isDuplicateError(result.error)) {
+      const existing = await findSavedRow();
+      if (existing) throw duplicateVoiceMessage();
+      throw result.error;
+    }
+    if (result.error && isNetworkFailure(result.error)) {
       let existing = await findSavedRow();
-      if (!existing && isNetworkFailure(result.error)) {
+      if (!existing) {
         onStage('retrying-row');
         result = await insertRow();
-        if (result.error && (isNetworkFailure(result.error) || isDuplicateError(result.error))) existing = await findSavedRow();
+        if (result.error && isNetworkFailure(result.error)) existing = await findSavedRow();
       }
       if (existing) return existing;
-      if (result.error && (isNetworkFailure(result.error) || isDuplicateError(result.error))) throw uncertainNetworkError('saving the memory details');
+      if (result.error && isNetworkFailure(result.error)) throw uncertainNetworkError('saving the memory details');
     }
     if (result.error) {
       await storage.remove([storagePath]);
