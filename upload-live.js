@@ -20,7 +20,8 @@
   const renderSelection = () => {
     const files = [...fileInput.files]; selection.replaceChildren();
     if (!files.length) { selection.textContent = 'No files picked yet.'; return; }
-    const summary = document.createElement('span'); summary.textContent = `${files.length} ${files.length === 1 ? 'file' : 'files'} selected · up to 50 MB each:`;
+    const shelfName = selectedKind === 'voice' ? 'voice note' : selectedKind === 'other' ? 'little thing' : selectedKind;
+    const summary = document.createElement('span'); summary.textContent = `${files.length} ${files.length === 1 ? 'file' : 'files'} selected for the ${shelfName} shelf · up to 50 MB each:`;
     const list = document.createElement('ul');
     files.forEach((file) => { const item = document.createElement('li'); item.textContent = `${file.name} · ${(file.size / 1024 / 1024).toFixed(1)} MB`; list.append(item); });
     selection.append(summary, list);
