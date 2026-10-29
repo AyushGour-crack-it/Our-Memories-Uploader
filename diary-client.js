@@ -5,9 +5,7 @@
   const resumableEndpoint = (() => {
     try {
       const projectUrl = new URL(config.supabaseUrl);
-      const project = projectUrl.hostname.match(/^([^.]+)\.supabase\.co$/);
-      const storageOrigin = project ? `https://${project[1]}.storage.supabase.co` : projectUrl.origin;
-      return `${storageOrigin}/storage/v1/upload/resumable`;
+      return `${projectUrl.origin}/storage/v1/upload/resumable`;
     } catch { return null; }
   })();
   const configured = Boolean(
@@ -26,7 +24,8 @@
 
   const isNetworkFailure = (error) => {
     const message = `${error?.name || ''} ${error?.message || ''} ${error?.cause?.message || ''}`.toLowerCase();
-    return ['failed to fetch', 'networkerror', 'network request failed', 'load failed', 'fetch failed'].some((phrase) => message.includes(phrase));
+    return ['failed to fetch', 'networkerror', 'network request failed', 'load failed', 'fetch failed', 'response code: n/a', 'response code: 0'].some((phrase) => message.includes(phrase)) ||
+      (message.includes('progressevent') && message.includes('upload'));
   };
 
   const isDuplicateError = (error) => String(error?.statusCode || error?.code || '').includes('409') ||
