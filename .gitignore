@@ -1,0 +1,7 @@
+.env
+.env.*
+!.env.example
+.vercel/
+.supabase/
+node_modules/
+dist/

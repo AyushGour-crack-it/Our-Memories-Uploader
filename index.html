@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#090d1c" />
+    <title>Add a memory · Our little diary</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="archive.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+    <script src="diary-config.js" defer></script>
+    <script src="diary-client.js" defer></script>
+    <script src="upload-live.js" defer></script>
+  </head>
+  <body class="upload-preview-page uploader-site-page">
+    <header class="archive-header">
+      <a class="archive-wordmark" href="#top"><span aria-hidden="true">☾</span> our little diary</a>
+      <a class="archive-back" id="back-to-diary-top" href="#">back to our memories <span aria-hidden="true">↗</span></a>
+    </header>
+
+    <main class="upload-shell" id="top">
+      <form class="diary-auth diary-auth--upload" id="diary-auth-form"><label for="diary-email">sign in to our private diary</label><div><input id="diary-email" type="email" autocomplete="email" required placeholder="your invited email" /><button type="submit">send sign-in link</button></div><p id="diary-auth-status" role="status">Only our two invited accounts can add memories.</p></form>
+      <button class="archive-signout" id="diary-signout" type="button" hidden>sign out</button>
+      <div class="upload-shell__heading">
+        <p class="eyebrow"><span class="eyebrow__line"></span> save this little moment <span class="eyebrow__line"></span></p>
+        <h1>A memory for<br /><em>our little diary.</em></h1>
+        <p>Choose what you’re adding, pick the files, and leave a little note so we remember this moment exactly how it felt.</p>
+      </div>
+      <form class="upload-card" id="memory-upload-form" hidden>
+        <div class="upload-categories" role="group" aria-label="Choose memory type">
+          <button class="upload-category is-selected" type="button" data-kind="photo" aria-pressed="true"><span aria-hidden="true">▧</span>photo</button>
+          <button class="upload-category" type="button" data-kind="video" aria-pressed="false"><span aria-hidden="true">▷</span>video</button>
+          <button class="upload-category" type="button" data-kind="voice" aria-pressed="false"><span aria-hidden="true">♫</span>voice note</button>
+          <button class="upload-category" type="button" data-kind="other" aria-pressed="false"><span aria-hidden="true">✦</span>other</button>
+        </div>
+        <label class="upload-drop" id="upload-drop" for="memory-files">
+          <span class="upload-drop__icon" aria-hidden="true">＋</span>
+          <strong>Choose a little memory</strong>
+          <small>or drag your files here · multiple files welcome · 50 MB max each</small>
+          <input id="memory-files" type="file" multiple accept="image/*" />
+        </label>
+        <div class="upload-fields">
+          <label class="upload-field">when was it?<input type="date" name="memory-date" /></label>
+          <label class="upload-field">give it a little name<input type="text" name="memory-title" maxlength="80" placeholder="Our movie night, the cat filter…" /></label>
+          <label class="upload-field" style="grid-column: 1 / -1;">a note for later<textarea name="memory-note" maxlength="280" placeholder="What do you want us to remember about this? "></textarea></label>
+        </div>
+        <div class="upload-selection" id="upload-selection" aria-live="polite">No files picked yet.</div>
+        <div class="upload-actions">
+          <button class="upload-save" type="submit">save this memory <span aria-hidden="true">♡</span></button>
+          <p class="upload-status" id="upload-status" role="status">Choose the kind of memory, then save it to our private diary. Files up to 50 MB.</p>
+        </div>
+      </form>
+      <a class="upload-back" id="back-to-diary" href="#">← return to the diary</a>
+    </main>
+  </body>
+</html>
