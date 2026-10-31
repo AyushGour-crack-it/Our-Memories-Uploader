@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#090d1c" />
+    <meta name="theme-color" content="#f6efe4" />
     <title>Add a memory · Our little diary</title>
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="icon" href="/icons/diary-icon.svg" type="image/svg+xml" />
@@ -29,20 +29,20 @@
       <section class="upload-paper" aria-labelledby="uploader-title">
         <form class="diary-auth diary-auth--upload" id="diary-auth-form"><label for="diary-email">sign in to our private diary</label><div><input id="diary-email" type="email" autocomplete="email" required placeholder="your invited email" /><button type="submit">send sign-in link</button></div><p id="diary-auth-status" role="status">Only our two invited accounts can add memories.</p></form>
         <section class="mobile-app-shell" id="mobile-app-shell" hidden aria-label="Our Little Diary app">
-          <header class="mobile-app__topbar"><a class="mobile-app__brand" href="#mobile-app-home"><span aria-hidden="true">☾</span> our little diary</a><div class="mobile-app__top-actions"><span class="mobile-app__online" aria-hidden="true">✦</span><div id="mobile-signout-slot"></div></div></header>
+          <header class="mobile-app__topbar"><a class="mobile-app__brand" href="#mobile-app-home"><span aria-hidden="true">♡</span> our little diary</a><div class="mobile-app__top-actions"><div id="mobile-signout-slot"></div></div></header>
           <div id="mobile-auth-slot"></div>
           <section class="mobile-app__home" id="mobile-app-home" hidden>
-            <article class="mobile-app__welcome"><small>just for you and me ♡</small><h1>A little place for <em>our moments.</em></h1><p>Save the photo, voice note, or tiny thought you want to keep close.</p></article>
+            <article class="mobile-app__welcome"><small>YOUR LITTLE CORNER</small><h1>Little things,<br /><em>kept close.</em></h1><p>Photos, voice notes, and thoughts from our life together.</p><span class="mobile-app__welcome-heart" aria-hidden="true">♡</span></article>
             <div class="mobile-app__actions">
-              <button class="mobile-app__primary" type="button" data-mobile-add="mixed"><span aria-hidden="true">＋</span><span><strong>Add photos, videos &amp; voice notes</strong><small>Pick one or a whole little batch</small></span><b aria-hidden="true">›</b></button>
-              <button class="mobile-app__secondary" type="button" data-mobile-add="other"><span aria-hidden="true">✉</span><span><strong>Write an envelope note</strong><small>A thought with no file attached</small></span><b aria-hidden="true">›</b></button>
-              <button class="mobile-app__text-action" type="button" data-mobile-browse>Choose one kind of memory</button>
+              <button class="mobile-app__primary" type="button" data-mobile-add="mixed"><span class="mobile-app__action-icon" aria-hidden="true">＋</span><span><strong>Add a memory</strong><small>Photo, video, or voice note</small></span><b aria-hidden="true">›</b></button>
+              <button class="mobile-app__secondary" type="button" data-mobile-add="other"><span class="mobile-app__action-icon" aria-hidden="true">✉</span><span><strong>Write a little letter</strong><small>A note to keep for later</small></span><b aria-hidden="true">›</b></button>
+              <button class="mobile-app__text-action" type="button" data-mobile-browse>Choose one memory type</button>
             </div>
             <div class="mobile-app__recent-head"><span>recently tucked away</span><span>from our diary</span></div>
             <div class="mobile-app__recent" id="mobile-recent-list"><p class="mobile-app__recent-status" id="mobile-recent-status">Your saved memories will appear here.</p></div>
             <button class="mobile-app__resume" id="mobile-resume-draft" type="button" hidden>Continue your little draft →</button>
           </section>
-          <nav class="mobile-app__nav" aria-label="App navigation"><button type="button" class="is-active" data-mobile-home><span aria-hidden="true">⌂</span>home</button><button type="button" data-mobile-add="mixed"><span aria-hidden="true">＋</span>add</button><a id="mobile-diary-link" href="#"><span aria-hidden="true">▤</span>our diary</a></nav>
+          <nav class="mobile-app__nav" aria-label="App navigation"><button type="button" class="is-active" data-mobile-home><span aria-hidden="true">⌂</span>home</button><button type="button" data-mobile-add="mixed"><span aria-hidden="true">＋</span>add</button><a id="mobile-diary-link" href="#"><span aria-hidden="true">♡</span>our diary</a></nav>
           <p class="pwa-status mobile-app__status" id="mobile-pwa-status" role="status" aria-live="polite"></p>
         </section>
         <button class="archive-signout" id="diary-signout" type="button" hidden>sign out</button>

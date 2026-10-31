@@ -450,3 +450,91 @@ body.is-mobile-pwa .upload-status { margin: 0; font-size: 12px; line-height: 1.5
 @media (prefers-reduced-motion: reduce) {
   .mobile-app__actions button { transition: none; }
 }
+
+/* Refined installed-app skin: compact, warm, and designed for thumb-first use. */
+body.is-mobile-pwa {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: 0;
+  color: #493d35;
+  background: #f6efe4;
+}
+body.is-mobile-pwa::before { display: none !important; }
+body.is-mobile-pwa .upload-shell { padding: 0; }
+body.is-mobile-pwa .upload-paper { min-height: calc(100dvh - env(safe-area-inset-top)); background: transparent; }
+body.is-mobile-pwa #mobile-app-shell { width: min(100%, 560px); padding: 0 18px calc(82px + env(safe-area-inset-bottom)); }
+body.is-mobile-pwa .mobile-app__topbar {
+  position: sticky; z-index: 8; top: 0; display: flex; min-height: 58px; align-items: center;
+  justify-content: space-between; margin: 0 -18px; padding: 0 18px;
+  border-bottom: 1px solid #e9dfd0; background: rgba(246,239,228,.96); backdrop-filter: blur(16px);
+}
+body.is-mobile-pwa .mobile-app__brand { color: #51443b; font-size: 17px; letter-spacing: -.02em; }
+body.is-mobile-pwa .mobile-app__brand span { color: #c48183; }
+body.is-mobile-pwa .archive-signout {
+  min-height: 34px; align-self: center; margin: 0; padding: 0 13px; border-color: #e2d3be;
+  border-radius: 99px; background: #fffaf2; color: #806b57; font-size: 9px; line-height: 1;
+}
+body.is-mobile-pwa .mobile-app__home { display: grid; gap: 17px; padding: 19px 0 12px; }
+body.is-mobile-pwa .mobile-app__welcome {
+  min-height: 142px; padding: 19px 20px; border-color: #ead8c2; border-radius: 18px 18px 42px 18px;
+  background: linear-gradient(140deg,#fffaf2,#f1e4d2); box-shadow: 0 5px 16px rgba(107,78,54,.06);
+}
+body.is-mobile-pwa .mobile-app__welcome small { color: #a07a68; font-size: 8px; letter-spacing: .17em; }
+body.is-mobile-pwa .mobile-app__welcome h1 { margin: 11px 0 6px; color: #4b3d35; font-size: 32px; line-height: 1.02; letter-spacing: -.045em; }
+body.is-mobile-pwa .mobile-app__welcome h1 em { color: #bd8580; }
+body.is-mobile-pwa .mobile-app__welcome p { max-width: 270px; color: #806f61; font: 12px/1.5 var(--sans); }
+body.is-mobile-pwa .mobile-app__welcome-heart { position: absolute; right: 20px; bottom: 13px; color: #d8a5a0; font: 57px/1 var(--serif); transform: rotate(12deg); }
+body.is-mobile-pwa .mobile-app__actions { gap: 9px; margin: 0; }
+body.is-mobile-pwa .mobile-app__actions button { min-height: 62px; gap: 11px; padding: 9px 12px; border-radius: 13px; }
+body.is-mobile-pwa .mobile-app__primary { border-color: #c99e6b; background: #bd925d; box-shadow: 0 4px 10px rgba(105,75,45,.12); color: #fffaf1; }
+body.is-mobile-pwa .mobile-app__secondary { border-color: #ead8c8; background: #fffaf4; color: #655047; }
+body.is-mobile-pwa .mobile-app__action-icon { display: grid; width: 36px; height: 36px; flex: 0 0 36px; place-items: center; border-radius: 11px; background: rgba(255,255,255,.2); color: inherit; font-size: 19px; }
+body.is-mobile-pwa .mobile-app__secondary .mobile-app__action-icon { background: #f5e8e2; color: #bd8580; }
+body.is-mobile-pwa .mobile-app__actions strong { font: 14px var(--serif); }
+body.is-mobile-pwa .mobile-app__actions small { font: 10px var(--sans); }
+body.is-mobile-pwa .mobile-app__actions b { font-size: 20px; }
+body.is-mobile-pwa .mobile-app__text-action { min-height: 31px !important; color: #9a7866; font-size: 9px; }
+body.is-mobile-pwa .mobile-app__recent-head { margin: 0 1px -8px; color: #6d5849; font: 13px var(--serif); }
+body.is-mobile-pwa .mobile-app__recent-head span + span { color: #aa9380; font-size: 8px; }
+body.is-mobile-pwa .mobile-app__recent { gap: 7px; }
+body.is-mobile-pwa .mobile-app__recent-status { padding: 12px; border-color: #e5d6c5; border-radius: 11px; color: #8c7969; font-size: 12px; }
+body.is-mobile-pwa .mobile-memory { gap: 10px; padding: 9px 10px; border-color: #ebdfd1; border-radius: 11px; background: #fffaf3; color: #57483d; }
+body.is-mobile-pwa .mobile-memory__icon { width: 34px; height: 34px; flex-basis: 34px; background: #f7ece0; color: #b68a67; font-size: 16px; }
+body.is-mobile-pwa .mobile-memory__copy strong { color: #59473d; font-size: 13px; }
+body.is-mobile-pwa .mobile-memory__copy small { color: #9a8675; font-size: 9px; }
+body.is-mobile-pwa .mobile-memory__arrow { color: #bb8d65; }
+body.is-mobile-pwa .mobile-app__nav {
+  padding: 8px 18px calc(7px + env(safe-area-inset-bottom)); border-top-color: #e7dccd;
+  background: rgba(255,250,243,.97); box-shadow: 0 -5px 16px rgba(84,61,42,.06);
+}
+body.is-mobile-pwa .mobile-app__nav button,
+body.is-mobile-pwa .mobile-app__nav a { min-width: 72px; color: #9b8b7b; font-size: 8px; }
+body.is-mobile-pwa .mobile-app__nav .is-active { color: #a76f71; }
+body.is-mobile-pwa .mobile-app__nav [aria-hidden] { font-size: 19px; }
+body.is-mobile-pwa .mobile-app__status { background: #55473d; color: #fff8ec; }
+body.is-mobile-pwa .upload-card { gap: 12px; padding: 8px 14px 14px; border-color: #ecdfcf; border-radius: 15px; background: #fffaf3; box-shadow: 0 5px 18px rgba(107,78,54,.07); }
+body.is-mobile-pwa .mobile-form-head { margin: 0 -14px; padding: 7px 14px; border-color: #eee2d2; border-radius: 13px 13px 0 0; background: rgba(255,250,243,.97); color: #8d7460; }
+body.is-mobile-pwa .mobile-form-head button { color: #765c4c; }
+body.is-mobile-pwa .mobile-app__stepper { color: #a79786; }
+body.is-mobile-pwa .mobile-app__stepper .is-current { color: #a76f71; }
+body.is-mobile-pwa .upload-category { border-color: #eee1d3; background: #fffdfa; color: #806f61; }
+body.is-mobile-pwa .upload-category.is-selected { border-color: #cb9b8e; background: #f8ebe5; color: #79594f; }
+body.is-mobile-pwa .upload-category span { color: #c08780; }
+body.is-mobile-pwa .upload-mixed-mode { border-color: #e5d0b5; background: #fbf3e7; color: #826a51; }
+body.is-mobile-pwa .upload-drop { min-height: 105px; border-color: #d9c6ad; border-radius: 12px; background: #fcf7ef; }
+body.is-mobile-pwa .upload-drop strong { color: #5c4c40; font-size: 15px; }
+body.is-mobile-pwa .upload-drop small { color: #998574; font-size: 9px; }
+body.is-mobile-pwa .upload-field { color: #7e6958; font-size: 12px; }
+body.is-mobile-pwa .upload-field input,
+body.is-mobile-pwa .upload-field textarea { border-color: #e6d9c9; border-radius: 9px; background: #fffdfa; color: #4f4037; font: 15px var(--sans); }
+body.is-mobile-pwa .upload-field textarea { min-height: 140px; }
+body.is-mobile-pwa .upload-selection { color: #8e7b68; }
+body.is-mobile-pwa .mobile-step-next { margin: 0 -14px -14px; width: calc(100% + 28px); border-radius: 0 0 15px 15px; background: #bd925d; box-shadow: 0 -7px 16px rgba(255,250,243,.85); }
+body.is-mobile-pwa .upload-actions { margin: 0 -14px -14px; padding: 10px 14px max(12px, env(safe-area-inset-bottom)); border-color: #ecdfcf; border-radius: 0 0 15px 15px; background: rgba(255,250,243,.98); box-shadow: 0 -8px 18px rgba(255,250,243,.8); }
+body.is-mobile-pwa .upload-save { border-color: #b48655; border-radius: 11px; background: #bd925d; color: #fffaf1; font: 16px var(--serif); text-transform: none; }
+body.is-mobile-pwa .upload-status { color: #806f61; font: 10px/1.4 var(--sans); }
+@media (max-height: 760px) {
+  body.is-mobile-pwa .mobile-app__home { gap: 12px; padding-top: 12px; }
+  body.is-mobile-pwa .mobile-app__welcome { min-height: 124px; padding: 15px 17px; }
+  body.is-mobile-pwa .mobile-app__welcome h1 { font-size: 28px; }
+  body.is-mobile-pwa .mobile-memory:nth-child(n + 3) { display: none; }
+}

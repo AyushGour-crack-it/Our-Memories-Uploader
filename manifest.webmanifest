@@ -8,7 +8,7 @@
   "display": "standalone",
   "display_override": ["standalone", "minimal-ui"],
   "background_color": "#f8f0e4",
-  "theme_color": "#172032",
+  "theme_color": "#f6efe4",
   "orientation": "portrait-primary",
   "icons": [
     { "src": "/icons/diary-icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
