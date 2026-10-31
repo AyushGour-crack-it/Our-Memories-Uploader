@@ -126,6 +126,21 @@
     }));
   };
 
+  const getRecentMemories = async (session) => {
+    const supabaseClient = requireConfigured();
+    if (!session) return null;
+    const load = (withLocation) => supabaseClient
+      .from('memories')
+      .select(withLocation ? 'id,title,media_type,memory_date,location,created_at' : 'id,title,media_type,memory_date,created_at')
+      .order('memory_date', { ascending: false, nullsFirst: false })
+      .order('created_at', { ascending: false })
+      .limit(3);
+    let { data, error } = await load(true);
+    if (error && missingLocationColumn(error)) ({ data, error } = await load(false));
+    if (error) throw error;
+    return data || [];
+  };
+
   const uploadMemory = async (file, metadata, session, onStage = () => {}) => {
     const supabaseClient = requireConfigured();
     if (!session?.user?.id) throw new Error('Sign in before adding a memory.');
@@ -279,6 +294,7 @@
       if (error) throw error;
     },
     listMemories,
+    getRecentMemories,
     uploadMemory,
   };
 })();

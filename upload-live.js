@@ -10,7 +10,13 @@
   const dropHint = document.querySelector('#upload-drop-hint');
   const mixedModeButton = document.querySelector('#mixed-upload');
   const signOut = document.querySelector('#diary-signout');
-  const diaryLinks = [document.querySelector('#back-to-diary-top'), document.querySelector('#back-to-diary')].filter(Boolean);
+  const mobileStandalone = Boolean(window.DiaryPwa?.mobileStandalone);
+  const mobileHome = document.querySelector('#mobile-app-home');
+  const recentList = document.querySelector('#mobile-recent-list');
+  const mobileNav = document.querySelector('.mobile-app__nav');
+  const resumeDraft = document.querySelector('#mobile-resume-draft');
+  const mobileDiaryLink = document.querySelector('#mobile-diary-link');
+  const diaryLinks = [document.querySelector('#back-to-diary-top'), document.querySelector('#back-to-diary'), mobileDiaryLink].filter(Boolean);
   const kinds = [...document.querySelectorAll('.upload-category')];
   const dateField = form.querySelector('[name="memory-date"]');
   const titleField = form.querySelector('[name="memory-title"]');
@@ -19,6 +25,73 @@
   let selectedKind = 'photo';
   let session = null;
   let sharedFiles = [];
+  const showMobileView = (view) => {
+    if (!mobileStandalone) return;
+    mobileHome.hidden = view !== 'home';
+    form.hidden = view !== 'form';
+    mobileNav.hidden = view !== 'home' || !session;
+    document.querySelectorAll('.mobile-app__nav [data-mobile-home], .mobile-app__nav [data-mobile-add]').forEach((button) => {
+      button.classList.toggle('is-active', (view === 'home' && button.hasAttribute('data-mobile-home')) || (view === 'form' && button.hasAttribute('data-mobile-add')));
+    });
+    if (view === 'form') window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+  const hasDraft = () => Boolean(fileInput.files.length || titleField.value.trim() || dateField.value || noteField.value.trim() || locationField.value.trim());
+  const setSelectedKind = (kind, clear = true) => {
+    selectedKind = kind;
+    mixedModeButton.setAttribute('aria-pressed', String(kind === 'mixed'));
+    kinds.forEach((button) => {
+      const selected = button.dataset.kind === kind;
+      button.classList.toggle('is-selected', selected);
+      button.setAttribute('aria-pressed', String(selected));
+    });
+    fileInput.accept = types[kind];
+    if (clear) { fileInput.value = ''; sharedFiles = []; }
+    renderSelection();
+  };
+  const openMobileForm = (kind = 'mixed', openPicker = false, browseKinds = false) => {
+    if (!mobileStandalone) return;
+    if (!browseKinds) {
+      setSelectedKind(kind);
+      titleField.value = ''; dateField.value = ''; noteField.value = ''; locationField.value = '';
+      say(status, kind === 'other' ? 'Write a little envelope note, with or without an attachment.' : 'Choose one or a whole batch of photos, videos, and voice notes.');
+    }
+    resumeDraft.hidden = true;
+    showMobileView('form');
+    if (openPicker && kind !== 'other') fileInput.click();
+  };
+  const renderRecentMemories = async () => {
+    if (!mobileStandalone || !session || !recentList) return;
+    try {
+      const memories = await window.DiaryClient.getRecentMemories(session);
+      recentList.replaceChildren();
+      if (!memories?.length) {
+        const empty = document.createElement('p'); empty.className = 'mobile-app__recent-status';
+        empty.textContent = 'Your first saved memory will find its place here.'; recentList.append(empty); return;
+      }
+      const icons = { photo: '▧', video: '▷', voice: '♫', 'little-things': '✉', other: '✉' };
+      const labels = { photo: 'a photo', video: 'a little film', voice: 'a voice note', 'little-things': 'an envelope note', other: 'a little memory' };
+      memories.forEach((memory) => {
+        const card = document.createElement(archiveUrl ? 'a' : 'article');
+        card.className = 'mobile-memory';
+        if (archiveUrl) card.href = archiveUrl;
+        const icon = document.createElement('span'); icon.className = 'mobile-memory__icon'; icon.setAttribute('aria-hidden', 'true'); icon.textContent = icons[memory.media_type] || '♡';
+        const copy = document.createElement('span'); copy.className = 'mobile-memory__copy';
+        const title = document.createElement('strong'); title.textContent = memory.title || 'a little moment';
+        const detail = document.createElement('small');
+        const dateText = memory.memory_date ? new Date(`${memory.memory_date}T00:00:00`).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : 'saved recently';
+        detail.textContent = `${labels[memory.media_type] || 'a memory'} · ${dateText}${memory.location ? ` · ${memory.location}` : ''}`;
+        copy.append(title, detail); card.append(icon, copy);
+        if (archiveUrl) { const arrow = document.createElement('span'); arrow.className = 'mobile-memory__arrow'; arrow.setAttribute('aria-hidden', 'true'); arrow.textContent = '↗'; card.append(arrow); }
+        recentList.append(card);
+      });
+    } catch (error) {
+      recentList.replaceChildren();
+      const message = document.createElement('p'); message.className = 'mobile-app__recent-status';
+      message.textContent = 'Recent moments could not load just now. Your diary is still safe.';
+      recentList.append(message);
+      console.warn('Could not load recent diary memories:', error);
+    }
+  };
   const say = (node, message, error = false) => { node.textContent = message; node.classList.toggle('is-error', error); node.classList.add('is-visible'); };
   const types = { photo: 'image/*', video: 'video/*', voice: 'audio/*', other: '', mixed: 'image/*,video/*,audio/*' };
   const mediaKind = (file) => {
@@ -62,23 +135,29 @@
     const shared = await window.DiaryPwa?.readSharedFiles?.() || [];
     if (!shared.length) {
       if (shareState === 'ready') say(status, 'The shared items were not available to review. Choose them again from your gallery or files.');
-      return;
+      return false;
     }
     sharedFiles = shared;
-    selectedKind = 'mixed'; fileInput.accept = types.mixed; mixedModeButton.setAttribute('aria-pressed', 'true');
-    kinds.forEach((button) => { button.classList.remove('is-selected'); button.setAttribute('aria-pressed', 'false'); });
+    setSelectedKind('mixed', false);
     const transfer = new DataTransfer(); shared.forEach((file) => transfer.items.add(file)); fileInput.files = transfer.files;
     renderSelection();
     say(status, `${shared.length} ${shared.length === 1 ? 'item' : 'items'} received from Share. Review the title, note, date, and optional place before saving.`);
     history.replaceState({}, '', `${location.pathname}${location.hash}`);
+    return true;
   };
   const syncSession = async () => {
-    if (!window.DiaryClient.configured) { authForm.hidden = false; return; }
+    if (!window.DiaryClient.configured) { authForm.hidden = false; if (mobileStandalone) mobileNav.hidden = true; return; }
     try {
       session = await window.DiaryClient.getMemberSession();
-      if (session) { authForm.hidden = true; form.hidden = false; signOut.hidden = false; await loadSharedFiles(); }
+      if (session) {
+        authForm.hidden = true; signOut.hidden = false; if (mobileStandalone) mobileNav.hidden = false;
+        if (mobileStandalone) showMobileView('home'); else form.hidden = false;
+        await renderRecentMemories();
+        if (await loadSharedFiles() && mobileStandalone) showMobileView('form');
+      }
       else {
-        authForm.hidden = false; form.hidden = true; signOut.hidden = true;
+        authForm.hidden = false; form.hidden = true; signOut.hidden = true; if (mobileStandalone) mobileNav.hidden = true;
+        if (mobileStandalone) showMobileView('home');
         const pending = await window.DiaryPwa?.readSharedFiles?.() || [];
         if (pending.length) say(authStatus, 'Sign in to finish adding the shared files. They are held temporarily on this device for up to 24 hours.');
       }
@@ -97,17 +176,27 @@
     say(status, message, shareState !== 'empty');
   }
   kinds.forEach((button) => button.addEventListener('click', () => {
-    selectedKind = button.dataset.kind;
-    mixedModeButton.setAttribute('aria-pressed', 'false');
-    kinds.forEach((choice) => { const selected = choice === button; choice.classList.toggle('is-selected', selected); choice.setAttribute('aria-pressed', String(selected)); });
-    fileInput.accept = types[selectedKind]; fileInput.value = ''; sharedFiles = []; window.DiaryPwa?.clearSharedFiles?.().catch(() => {}); renderSelection();
+    setSelectedKind(button.dataset.kind);
+    window.DiaryPwa?.clearSharedFiles?.().catch(() => {});
   }));
   mixedModeButton.addEventListener('click', () => {
-    selectedKind = 'mixed'; fileInput.accept = types.mixed; fileInput.value = ''; sharedFiles = [];
-    mixedModeButton.setAttribute('aria-pressed', 'true');
-    kinds.forEach((button) => { button.classList.remove('is-selected'); button.setAttribute('aria-pressed', 'false'); });
-    window.DiaryPwa?.clearSharedFiles?.().catch(() => {}); renderSelection();
+    setSelectedKind('mixed');
+    window.DiaryPwa?.clearSharedFiles?.().catch(() => {});
   });
+  document.querySelectorAll('[data-mobile-add]').forEach((button) => button.addEventListener('click', () => {
+    const kind = button.dataset.mobileAdd || 'mixed';
+    openMobileForm(kind, button.hasAttribute('data-open-picker'));
+  }));
+  document.querySelector('[data-mobile-browse]')?.addEventListener('click', () => { setSelectedKind('photo'); openMobileForm('photo', false, true); });
+  document.querySelector('[data-mobile-home]')?.addEventListener('click', () => {
+    resumeDraft.hidden = !hasDraft();
+    showMobileView('home');
+  });
+  document.querySelector('#mobile-form-home')?.addEventListener('click', () => {
+    resumeDraft.hidden = !hasDraft();
+    showMobileView('home');
+  });
+  resumeDraft?.addEventListener('click', () => { resumeDraft.hidden = true; showMobileView('form'); });
   fileInput.addEventListener('change', () => { sharedFiles = []; window.DiaryPwa?.clearSharedFiles?.().catch(() => {}); renderSelection(); });
   ['dragenter', 'dragover'].forEach((name) => dropZone.addEventListener(name, (event) => { event.preventDefault(); dropZone.classList.add('is-dragging'); }));
   ['dragleave', 'drop'].forEach((name) => dropZone.addEventListener(name, (event) => { event.preventDefault(); dropZone.classList.remove('is-dragging'); }));
@@ -171,6 +260,7 @@
       }
       if (saved && selectedKind === 'mixed') { fileInput.value = ''; fileInput.files = new DataTransfer().files; sharedFiles = []; renderSelection(); }
       say(status, `${saved} ${saved === 1 ? 'memory is' : 'memories are'} safely in the diary. The main diary may ask you to sign in there separately.`);
+      if (mobileStandalone) await renderRecentMemories();
     } catch (error) {
       if (saved && sharedFiles.length) {
         const remaining = files.slice(saved); const transfer = new DataTransfer(); remaining.forEach((file) => transfer.items.add(file)); fileInput.files = transfer.files; renderSelection();

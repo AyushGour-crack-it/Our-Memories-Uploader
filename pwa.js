@@ -1,11 +1,24 @@
 (() => {
   const installButton = document.querySelector('#pwa-install');
-  const status = document.querySelector('#pwa-status');
+  const desktopStatus = document.querySelector('#pwa-status');
   const standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+  const mobileStandalone = standalone && window.matchMedia('(max-width: 760px)').matches;
+  const status = mobileStandalone ? document.querySelector('#mobile-pwa-status') : desktopStatus;
   const isAppleMobile = /iPhone|iPad|iPod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   let installPrompt = null;
 
   const say = (message) => { if (status) status.textContent = message; };
+  if (mobileStandalone) {
+    document.body.classList.add('is-mobile-pwa');
+    const appShell = document.querySelector('#mobile-app-shell');
+    const authForm = document.querySelector('#diary-auth-form');
+    const signOut = document.querySelector('#diary-signout');
+    const authSlot = document.querySelector('#mobile-auth-slot');
+    const signOutSlot = document.querySelector('#mobile-signout-slot');
+    if (appShell) appShell.hidden = false;
+    if (authForm && authSlot) authSlot.append(authForm);
+    if (signOut && signOutSlot) signOutSlot.append(signOut);
+  }
   if ('serviceWorker' in navigator && window.isSecureContext) {
     window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => say('Install is unavailable right now. You can still use the uploader in your browser.')));
   }
@@ -84,7 +97,7 @@
     });
     db.close();
   };
-  window.DiaryPwa = { readSharedFiles, clearSharedFiles, removeSharedFile };
+  window.DiaryPwa = { readSharedFiles, clearSharedFiles, removeSharedFile, mobileStandalone };
   window.addEventListener('online', () => say('You’re back online. Sign in or save your memory when you’re ready.'));
   window.addEventListener('offline', () => say('You’re offline. Your files stay on this device; uploads need an internet connection.'));
 })();

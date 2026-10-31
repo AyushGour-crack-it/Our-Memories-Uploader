@@ -1,4 +1,4 @@
-const SHELL_CACHE = 'our-little-diary-shell-v1';
+const SHELL_CACHE = 'our-little-diary-shell-v2';
 const SHARE_DB = 'our-little-diary-share';
 const SHARE_STORE = 'incoming';
 const MAX_FILE_SIZE = 50 * 1024 * 1024;
