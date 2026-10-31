@@ -34,7 +34,7 @@
           <section class="mobile-app__home" id="mobile-app-home" hidden>
             <article class="mobile-app__welcome"><small>just for you and me ♡</small><h1>A little place for <em>our moments.</em></h1><p>Save the photo, voice note, or tiny thought you want to keep close.</p></article>
             <div class="mobile-app__actions">
-              <button class="mobile-app__primary" type="button" data-mobile-add="mixed" data-open-picker><span aria-hidden="true">＋</span><span><strong>Add photos, videos &amp; voice notes</strong><small>Pick one or a whole little batch</small></span><b aria-hidden="true">›</b></button>
+              <button class="mobile-app__primary" type="button" data-mobile-add="mixed"><span aria-hidden="true">＋</span><span><strong>Add photos, videos &amp; voice notes</strong><small>Pick one or a whole little batch</small></span><b aria-hidden="true">›</b></button>
               <button class="mobile-app__secondary" type="button" data-mobile-add="other"><span aria-hidden="true">✉</span><span><strong>Write an envelope note</strong><small>A thought with no file attached</small></span><b aria-hidden="true">›</b></button>
               <button class="mobile-app__text-action" type="button" data-mobile-browse>Choose one kind of memory</button>
             </div>
@@ -42,7 +42,7 @@
             <div class="mobile-app__recent" id="mobile-recent-list"><p class="mobile-app__recent-status" id="mobile-recent-status">Your saved memories will appear here.</p></div>
             <button class="mobile-app__resume" id="mobile-resume-draft" type="button" hidden>Continue your little draft →</button>
           </section>
-          <nav class="mobile-app__nav" aria-label="App navigation"><button type="button" class="is-active" data-mobile-home><span aria-hidden="true">⌂</span>home</button><button type="button" data-mobile-add="mixed" data-open-picker><span aria-hidden="true">＋</span>add</button><a id="mobile-diary-link" href="#"><span aria-hidden="true">▤</span>our diary</a></nav>
+          <nav class="mobile-app__nav" aria-label="App navigation"><button type="button" class="is-active" data-mobile-home><span aria-hidden="true">⌂</span>home</button><button type="button" data-mobile-add="mixed"><span aria-hidden="true">＋</span>add</button><a id="mobile-diary-link" href="#"><span aria-hidden="true">▤</span>our diary</a></nav>
           <p class="pwa-status mobile-app__status" id="mobile-pwa-status" role="status" aria-live="polite"></p>
         </section>
         <button class="archive-signout" id="diary-signout" type="button" hidden>sign out</button>
@@ -56,7 +56,7 @@
           <button class="pwa-install" id="pwa-install" type="button" hidden>install app</button>
         </div>
       <form class="upload-card" id="memory-upload-form" hidden>
-        <div class="mobile-form-head"><button type="button" id="mobile-form-home">← back to our moments</button><span>save a little memory</span></div>
+        <div class="mobile-form-head"><button type="button" id="mobile-form-home"><span aria-hidden="true">←</span> moments</button><span>add a keepsake</span></div>
         <div class="upload-categories" role="group" aria-label="Choose memory type">
           <button class="upload-category is-selected" type="button" data-kind="photo" aria-pressed="true"><span aria-hidden="true">🌷</span>photo</button>
           <button class="upload-category" type="button" data-kind="video" aria-pressed="false"><span aria-hidden="true">📹</span>video</button>

@@ -344,7 +344,7 @@ body.is-mobile-pwa .upload-paper {
 }
 body.is-mobile-pwa .upload-paper::before,
 body.is-mobile-pwa .upload-paper::after { display: none; }
-body.is-mobile-pwa #mobile-app-shell { display: block; width: min(100%, 620px); min-height: calc(100dvh - env(safe-area-inset-top)); margin: 0 auto; padding: 12px 20px 28px; }
+body.is-mobile-pwa #mobile-app-shell { display: block; width: min(100%, 620px); margin: 0 auto; padding: 12px 20px 18px; }
 body.is-mobile-pwa #mobile-app-shell[hidden],
 body.is-mobile-pwa #mobile-app-home[hidden] { display: none !important; }
 .mobile-app__topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 52px; padding: 0 0 15px; border-bottom: 1px solid rgba(231, 204, 164, .22); }
@@ -396,11 +396,12 @@ body.is-mobile-pwa .diary-auth p { margin: 10px 0 0; color: #c9bba9; font-size: 
 .mobile-app__nav [aria-hidden] { font: 20px/1 var(--serif); }
 .mobile-app__nav .is-active { color: #edca91; }
 .mobile-app__status { position: fixed; z-index: 11; right: 14px; bottom: calc(66px + env(safe-area-inset-bottom)); left: 14px; width: fit-content; max-width: calc(100% - 28px); margin: auto; padding: 7px 12px; border-radius: 20px; background: #f1dfc4; box-shadow: 0 4px 18px #0004; color: #534235; font-size: 11px; }
-body.is-mobile-pwa .upload-card { display: grid; gap: 16px; width: 100%; margin: 22px auto 0; padding: 18px; border: 1px solid #cfb99a; border-radius: 17px; background: linear-gradient(155deg,#fff7e9,#f2e5d1); box-shadow: 0 14px 35px rgba(0,0,0,.22); }
+body.is-mobile-pwa .upload-card { display: grid; gap: 15px; width: 100%; margin: 0 auto; padding: 12px 16px 18px; border: 1px solid #cfb99a; border-radius: 0 0 17px 17px; background: linear-gradient(155deg,#fff7e9,#f2e5d1); box-shadow: 0 14px 35px rgba(0,0,0,.22); }
 body.is-mobile-pwa .upload-card[hidden] { display: none !important; }
 .mobile-form-head { display: none; }
-body.is-mobile-pwa .mobile-form-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding-bottom: 12px; border-bottom: 1px solid #d8c6ac; color: #87683f; font: 10px var(--sans); letter-spacing: .13em; text-transform: uppercase; }
-.mobile-form-head button { padding: 7px 0; border: 0; background: transparent; color: #795a37; font: 12px var(--serif); letter-spacing: 0; text-transform: none; }
+body.is-mobile-pwa .mobile-form-head { position: sticky; z-index: 5; top: 0; display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 0 -16px; padding: 9px 16px; border-bottom: 1px solid #d8c6ac; border-radius: 15px 15px 0 0; background: rgba(255,247,233,.97); color: #87683f; font: 10px var(--sans); letter-spacing: .13em; text-transform: uppercase; }
+.mobile-form-head button { display: inline-flex; min-height: 40px; align-items: center; gap: 8px; padding: 5px 10px 5px 0; border: 0; background: transparent; color: #795a37; font: 15px var(--serif); letter-spacing: 0; text-transform: none; }
+body.is-mobile-pwa .mobile-form-head button span { display: grid; width: 30px; height: 30px; place-items: center; border: 1px solid #c6ad8a; border-radius: 50%; font: 18px var(--sans); }
 body.is-mobile-pwa .upload-categories { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 9px; }
 body.is-mobile-pwa .upload-category { min-height: 76px; border-radius: 11px; background: #f8f0e3; }
 body.is-mobile-pwa .upload-category span { min-height: 33px; }
@@ -416,7 +417,7 @@ body.is-mobile-pwa .upload-location-wrap { gap: 6px; }
 body.is-mobile-pwa .upload-location-wrap small { font: 11px var(--sans); }
 body.is-mobile-pwa .upload-selection { padding: 10px 0; font-size: 12px; line-height: 1.5; }
 body.is-mobile-pwa .upload-selection li { padding: 7px 0; font-size: 12px; }
-body.is-mobile-pwa .upload-actions { display: grid; gap: 8px; margin-top: 0; }
+body.is-mobile-pwa .upload-actions { position: sticky; z-index: 4; bottom: 0; display: grid; gap: 8px; margin: 0 -16px -18px; padding: 12px 16px max(14px, env(safe-area-inset-bottom)); border-top: 1px solid rgba(207,185,154,.68); border-radius: 0 0 17px 17px; background: rgba(247,237,220,.97); box-shadow: 0 -10px 20px rgba(247,237,220,.72); }
 body.is-mobile-pwa .upload-save { width: 100%; min-height: 56px; font-size: 18px; }
 body.is-mobile-pwa .upload-status { margin: 0; font-size: 12px; line-height: 1.5; }
 @media (max-width: 380px) {

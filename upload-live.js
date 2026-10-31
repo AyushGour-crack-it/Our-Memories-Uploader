@@ -33,7 +33,7 @@
     document.querySelectorAll('.mobile-app__nav [data-mobile-home], .mobile-app__nav [data-mobile-add]').forEach((button) => {
       button.classList.toggle('is-active', (view === 'home' && button.hasAttribute('data-mobile-home')) || (view === 'form' && button.hasAttribute('data-mobile-add')));
     });
-    if (view === 'form') window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (view === 'form') window.scrollTo(0, 0);
   };
   const hasDraft = () => Boolean(fileInput.files.length || titleField.value.trim() || dateField.value || noteField.value.trim() || locationField.value.trim());
   const setSelectedKind = (kind, clear = true) => {
@@ -48,14 +48,13 @@
     if (clear) { fileInput.value = ''; sharedFiles = []; }
     renderSelection();
   };
-  const openMobileForm = (kind = 'mixed', openPicker = false) => {
+  const openMobileForm = (kind = 'mixed') => {
     if (!mobileStandalone) return;
     setSelectedKind(kind);
     titleField.value = ''; dateField.value = ''; noteField.value = ''; locationField.value = '';
     say(status, kind === 'other' ? 'Write a little envelope note, with or without an attachment.' : 'Choose one or a whole batch of photos, videos, and voice notes.');
     resumeDraft.hidden = true;
     showMobileView('form');
-    if (openPicker && kind !== 'other') fileInput.click();
   };
   const renderRecentMemories = async () => {
     if (!mobileStandalone || !session || !recentList) return;
@@ -183,7 +182,7 @@
   });
   document.querySelectorAll('[data-mobile-add]').forEach((button) => button.addEventListener('click', () => {
     const kind = button.dataset.mobileAdd || 'mixed';
-    openMobileForm(kind, button.hasAttribute('data-open-picker'));
+    openMobileForm(kind);
   }));
   document.querySelector('[data-mobile-browse]')?.addEventListener('click', () => openMobileForm('photo'));
   document.querySelector('[data-mobile-home]')?.addEventListener('click', () => {
