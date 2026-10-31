@@ -326,18 +326,17 @@
 body.is-mobile-pwa {
   min-height: 100vh;
   min-height: 100dvh;
-  padding: max(0px, env(safe-area-inset-top)) 0 max(88px, calc(76px + env(safe-area-inset-bottom)));
+  padding: max(0px, env(safe-area-inset-top)) 0 0;
   overflow-x: hidden;
-  background:
-    radial-gradient(ellipse at 12% 3%, rgba(226, 183, 124, .16), transparent 36%),
-    radial-gradient(ellipse at 90% 42%, rgba(191, 142, 98, .12), transparent 35%),
-    #1b1918;
+  background: linear-gradient(145deg, #fff8eb 0%, #f4e8d4 72%, #edddc2 100%);
+  color: #45382f;
 }
 body.is-mobile-pwa .uploader-sky,
 body.is-mobile-pwa > .archive-header,
 body.is-mobile-pwa .upload-shell__heading,
 body.is-mobile-pwa > main .upload-back { display: none !important; }
-body.is-mobile-pwa .upload-shell { width: 100%; margin: 0; }
+body.is-mobile-pwa::before { display: none !important; }
+body.is-mobile-pwa .upload-shell { width: 100%; margin: 0; padding: 0; }
 body.is-mobile-pwa .upload-paper {
   width: 100%; min-height: calc(100dvh - env(safe-area-inset-top)); margin: 0; padding: 0;
   border: 0; border-radius: 0; background: transparent; box-shadow: none; overflow: visible;
