@@ -352,7 +352,7 @@ body.is-mobile-pwa #mobile-app-home[hidden] { display: none !important; }
 .mobile-app__brand span { margin-right: 6px; color: #d9ae6b; }
 .mobile-app__top-actions { display: flex; align-items: center; gap: 12px; }
 .mobile-app__online { color: #d9ae6b; font-size: 16px; }
-body.is-mobile-pwa .archive-signout { min-height: 34px; padding: 0 11px; border: 1px solid rgba(222, 187, 135, .42); border-radius: 20px; background: rgba(255,255,255,.035); color: #e7d8bf; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; }
+body.is-mobile-pwa .archive-signout { display: flex; min-height: 34px; align-items: center; justify-content: center; align-self: center; margin: 0; padding: 0 12px; border: 1px solid rgba(222, 187, 135, .42); border-radius: 20px; background: rgba(255,255,255,.035); color: #e7d8bf; font-size: 10px; line-height: 1; letter-spacing: .08em; text-transform: uppercase; }
 body.is-mobile-pwa .diary-auth { margin: 24px 0 0; padding: 19px; border: 1px solid rgba(226, 188, 134, .35); border-radius: 16px; background: rgba(255,255,255,.045); }
 body.is-mobile-pwa .diary-auth > label { color: #e5c58e; font: 11px var(--sans); letter-spacing: .15em; text-transform: uppercase; }
 body.is-mobile-pwa .diary-auth > div { display: flex; gap: 9px; margin-top: 12px; }
@@ -399,14 +399,36 @@ body.is-mobile-pwa .diary-auth p { margin: 10px 0 0; color: #c9bba9; font-size: 
 body.is-mobile-pwa .upload-card { display: grid; gap: 15px; width: 100%; margin: 0 auto; padding: 12px 16px 18px; border: 1px solid #cfb99a; border-radius: 0 0 17px 17px; background: linear-gradient(155deg,#fff7e9,#f2e5d1); box-shadow: 0 14px 35px rgba(0,0,0,.22); }
 body.is-mobile-pwa .upload-card[hidden] { display: none !important; }
 .mobile-form-head { display: none; }
+.mobile-app__stepper,
+.mobile-step-next,
+.mobile-change-files { display: none; }
 body.is-mobile-pwa .mobile-form-head { position: sticky; z-index: 5; top: 0; display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 0 -16px; padding: 9px 16px; border-bottom: 1px solid #d8c6ac; border-radius: 15px 15px 0 0; background: rgba(255,247,233,.97); color: #87683f; font: 10px var(--sans); letter-spacing: .13em; text-transform: uppercase; }
 .mobile-form-head button { display: inline-flex; min-height: 40px; align-items: center; gap: 8px; padding: 5px 10px 5px 0; border: 0; background: transparent; color: #795a37; font: 15px var(--serif); letter-spacing: 0; text-transform: none; }
 body.is-mobile-pwa .mobile-form-head button span { display: grid; width: 30px; height: 30px; place-items: center; border: 1px solid #c6ad8a; border-radius: 50%; font: 18px var(--sans); }
+body.is-mobile-pwa .mobile-app__stepper { display: flex; align-items: center; justify-content: center; gap: 11px; padding: 1px 0 5px; color: #a59278; font: 11px var(--sans); letter-spacing: .04em; }
+body.is-mobile-pwa .mobile-app__stepper > span { display: inline-flex; align-items: center; gap: 6px; }
+body.is-mobile-pwa .mobile-app__stepper > span::first-letter { color: #a78a62; }
+body.is-mobile-pwa .mobile-app__stepper small { font-size: 10px; }
+body.is-mobile-pwa .mobile-app__stepper i { width: 40px; height: 1px; background: #d6c4a9; }
+body.is-mobile-pwa .mobile-app__stepper .is-current { color: #8b6334; font-weight: 600; }
+body.is-mobile-pwa .mobile-form-step { display: grid; gap: 13px; min-width: 0; }
+body.is-mobile-pwa #mobile-details-step { display: none; }
+body.is-mobile-pwa .upload-card.is-details-step #mobile-picker-step { display: none; }
+body.is-mobile-pwa .upload-card.is-details-step #mobile-details-step { display: grid; }
 body.is-mobile-pwa .upload-categories { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 9px; }
 body.is-mobile-pwa .upload-category { min-height: 76px; border-radius: 11px; background: #f8f0e3; }
 body.is-mobile-pwa .upload-category span { min-height: 33px; }
 body.is-mobile-pwa .upload-mixed-mode { min-height: 46px; border-radius: 10px; background: #f8f0e3; }
 body.is-mobile-pwa .upload-drop { min-height: 130px; padding: 18px 12px; border-radius: 12px; }
+body.is-mobile-pwa .upload-selection { padding: 6px 0 0; font-size: 12px; line-height: 1.45; }
+body.is-mobile-pwa .mobile-step-status { margin: 0; color: #a45355; font: 12px/1.45 var(--sans); }
+body.is-mobile-pwa .mobile-step-status:empty { display: none; }
+body.is-mobile-pwa .mobile-step-next { position: sticky; z-index: 4; bottom: 0; display: flex; width: calc(100% + 32px); min-height: 57px; align-items: center; justify-content: space-between; margin: 0 -16px -18px; padding: 11px 24px max(13px, env(safe-area-inset-bottom)); border: 0; border-top: 1px solid rgba(207,185,154,.68); border-radius: 0 0 17px 17px; background: #b88948; box-shadow: 0 -8px 18px rgba(247,237,220,.75); color: #fff8eb; font: 16px var(--serif); }
+body.is-mobile-pwa .mobile-step-next span { font: 22px var(--sans); }
+body.is-mobile-pwa .mobile-change-files { display: flex; width: 100%; min-height: 48px; align-items: center; justify-content: space-between; gap: 10px; padding: 0 12px; border: 1px solid #d8c7ad; border-radius: 10px; background: rgba(255,255,255,.42); color: #65503a; text-align: left; font: 12px var(--sans); }
+body.is-mobile-pwa .mobile-change-files span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+body.is-mobile-pwa .mobile-change-files b { flex: 0 0 auto; color: #946c3c; font-size: 10px; font-weight: 500; text-transform: uppercase; }
+body.is-mobile-pwa .upload-card.is-details-step .mobile-step-next { display: none; }
 body.is-mobile-pwa .upload-fields { display: grid; gap: 13px; margin-top: 0; }
 body.is-mobile-pwa .upload-field,
 body.is-mobile-pwa .upload-field[style] { display: grid; grid-template-columns: 1fr; gap: 7px; margin: 0; font-size: 17px; }
@@ -415,9 +437,9 @@ body.is-mobile-pwa .upload-field textarea { width: 100%; min-height: 49px; font-
 body.is-mobile-pwa .upload-field textarea { min-height: 96px; }
 body.is-mobile-pwa .upload-location-wrap { gap: 6px; }
 body.is-mobile-pwa .upload-location-wrap small { font: 11px var(--sans); }
-body.is-mobile-pwa .upload-selection { padding: 10px 0; font-size: 12px; line-height: 1.5; }
 body.is-mobile-pwa .upload-selection li { padding: 7px 0; font-size: 12px; }
 body.is-mobile-pwa .upload-actions { position: sticky; z-index: 4; bottom: 0; display: grid; gap: 8px; margin: 0 -16px -18px; padding: 12px 16px max(14px, env(safe-area-inset-bottom)); border-top: 1px solid rgba(207,185,154,.68); border-radius: 0 0 17px 17px; background: rgba(247,237,220,.97); box-shadow: 0 -10px 20px rgba(247,237,220,.72); }
+body.is-mobile-pwa .upload-card:not(.is-details-step) .upload-actions { display: none; }
 body.is-mobile-pwa .upload-save { width: 100%; min-height: 56px; font-size: 18px; }
 body.is-mobile-pwa .upload-status { margin: 0; font-size: 12px; line-height: 1.5; }
 @media (max-width: 380px) {

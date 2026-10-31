@@ -57,6 +57,8 @@
         </div>
       <form class="upload-card" id="memory-upload-form" hidden>
         <div class="mobile-form-head"><button type="button" id="mobile-form-home"><span aria-hidden="true">←</span> moments</button><span>add a keepsake</span></div>
+        <div class="mobile-app__stepper" aria-label="Add memory steps"><span class="is-current" id="mobile-step-one">1 <small>choose</small></span><i aria-hidden="true"></i><span id="mobile-step-two">2 <small>details</small></span></div>
+        <div class="mobile-form-step" id="mobile-picker-step">
         <div class="upload-categories" role="group" aria-label="Choose memory type">
           <button class="upload-category is-selected" type="button" data-kind="photo" aria-pressed="true"><span aria-hidden="true">🌷</span>photo</button>
           <button class="upload-category" type="button" data-kind="video" aria-pressed="false"><span aria-hidden="true">📹</span>video</button>
@@ -70,16 +72,22 @@
           <small id="upload-drop-hint">or drag your files here · multiple files welcome · 50 MB max each</small>
           <input id="memory-files" type="file" multiple accept="image/*" />
         </label>
+        <div class="upload-selection" id="upload-selection" aria-live="polite">No files picked yet.</div>
+        <p class="mobile-step-status" id="mobile-picker-status" role="status" aria-live="polite"></p>
+        <button class="mobile-step-next" id="mobile-continue" type="button">continue to the little details <span aria-hidden="true">→</span></button>
+        </div>
+        <div class="mobile-form-step" id="mobile-details-step">
+        <button class="mobile-change-files" id="mobile-edit-selection" type="button"><span id="mobile-selected-summary">your selected memory</span><b>change ↗</b></button>
         <div class="upload-fields">
           <label class="upload-field">when was it?<input type="date" name="memory-date" /></label>
           <label class="upload-field">give it a little name<input type="text" name="memory-title" maxlength="80" placeholder="Our movie night, the cat filter…" /></label>
           <label class="upload-field" style="grid-column: 1 / -1;">a note for later<textarea name="memory-note" maxlength="280" placeholder="What do you want us to remember about this? "></textarea></label>
           <label class="upload-field upload-location-field">where was it? <span class="upload-location-wrap"><input type="text" name="memory-location" maxlength="100" autocomplete="off" placeholder="A place, city, or our little café · optional" /><small>Place name only. This never asks for GPS.</small></span></label>
         </div>
-        <div class="upload-selection" id="upload-selection" aria-live="polite">No files picked yet.</div>
         <div class="upload-actions">
           <button class="upload-save" type="submit">save this memory <span aria-hidden="true">♡</span></button>
           <p class="upload-status" id="upload-status" role="status">Choose the kind of memory, then save it to our private diary. Files up to 50 MB.</p>
+        </div>
         </div>
       </form>
       </section>

@@ -15,6 +15,10 @@
   const recentList = document.querySelector('#mobile-recent-list');
   const mobileNav = document.querySelector('.mobile-app__nav');
   const resumeDraft = document.querySelector('#mobile-resume-draft');
+  const mobilePickerStatus = document.querySelector('#mobile-picker-status');
+  const mobileStepOne = document.querySelector('#mobile-step-one');
+  const mobileStepTwo = document.querySelector('#mobile-step-two');
+  const mobileSelectedSummary = document.querySelector('#mobile-selected-summary');
   const mobileDiaryLink = document.querySelector('#mobile-diary-link');
   const diaryLinks = [document.querySelector('#back-to-diary-top'), document.querySelector('#back-to-diary'), mobileDiaryLink].filter(Boolean);
   const kinds = [...document.querySelectorAll('.upload-category')];
@@ -35,9 +39,22 @@
     });
     if (view === 'form') window.scrollTo(0, 0);
   };
+  const showMobileStep = (step) => {
+    if (!mobileStandalone) return;
+    form.classList.toggle('is-details-step', step === 'details');
+    mobileStepOne.classList.toggle('is-current', step === 'choose');
+    mobileStepTwo.classList.toggle('is-current', step === 'details');
+    if (mobileSelectedSummary) {
+      const count = fileInput.files.length;
+      const label = selectedKind === 'other' ? 'envelope note' : selectedKind === 'mixed' ? 'mixed memory' : selectedKind === 'voice' ? 'voice note' : selectedKind;
+      mobileSelectedSummary.textContent = count ? `${count} ${count === 1 ? 'item' : 'items'} · ${label}` : selectedKind === 'other' ? 'envelope note · no attachment' : `no ${label} selected yet`;
+    }
+    if (step === 'details') window.scrollTo(0, 0);
+  };
   const hasDraft = () => Boolean(fileInput.files.length || titleField.value.trim() || dateField.value || noteField.value.trim() || locationField.value.trim());
   const setSelectedKind = (kind, clear = true) => {
     selectedKind = kind;
+    if (mobilePickerStatus) mobilePickerStatus.textContent = '';
     mixedModeButton.setAttribute('aria-pressed', String(kind === 'mixed'));
     kinds.forEach((button) => {
       const selected = button.dataset.kind === kind;
@@ -53,6 +70,8 @@
     setSelectedKind(kind);
     titleField.value = ''; dateField.value = ''; noteField.value = ''; locationField.value = '';
     say(status, kind === 'other' ? 'Write a little envelope note, with or without an attachment.' : 'Choose one or a whole batch of photos, videos, and voice notes.');
+    if (mobilePickerStatus) mobilePickerStatus.textContent = '';
+    showMobileStep(kind === 'other' ? 'details' : 'choose');
     resumeDraft.hidden = true;
     showMobileView('form');
   };
@@ -150,7 +169,7 @@
         authForm.hidden = true; signOut.hidden = false; if (mobileStandalone) mobileNav.hidden = false;
         if (mobileStandalone) showMobileView('home'); else form.hidden = false;
         await renderRecentMemories();
-        if (await loadSharedFiles() && mobileStandalone) showMobileView('form');
+        if (await loadSharedFiles() && mobileStandalone) { showMobileStep('details'); showMobileView('form'); }
       }
       else {
         authForm.hidden = false; form.hidden = true; signOut.hidden = true; if (mobileStandalone) mobileNav.hidden = true;
@@ -180,6 +199,22 @@
     setSelectedKind('mixed');
     window.DiaryPwa?.clearSharedFiles?.().catch(() => {});
   });
+  document.querySelector('#mobile-continue')?.addEventListener('click', () => {
+    if (selectedKind !== 'other' && !fileInput.files.length) {
+      mobilePickerStatus.textContent = 'Choose a photo, video, or voice note first. You can select several together.';
+      mobilePickerStatus.classList.add('is-visible');
+      return;
+    }
+    try { [...fileInput.files].forEach(validate); }
+    catch (error) {
+      mobilePickerStatus.textContent = error.message;
+      mobilePickerStatus.classList.add('is-visible');
+      return;
+    }
+    mobilePickerStatus.textContent = '';
+    showMobileStep('details');
+  });
+  document.querySelector('#mobile-edit-selection')?.addEventListener('click', () => showMobileStep('choose'));
   document.querySelectorAll('[data-mobile-add]').forEach((button) => button.addEventListener('click', () => {
     const kind = button.dataset.mobileAdd || 'mixed';
     openMobileForm(kind);
@@ -194,7 +229,10 @@
     showMobileView('home');
   });
   resumeDraft?.addEventListener('click', () => { resumeDraft.hidden = true; showMobileView('form'); });
-  fileInput.addEventListener('change', () => { sharedFiles = []; window.DiaryPwa?.clearSharedFiles?.().catch(() => {}); renderSelection(); });
+  fileInput.addEventListener('change', () => {
+    sharedFiles = []; window.DiaryPwa?.clearSharedFiles?.().catch(() => {}); renderSelection();
+    if (mobileStandalone && fileInput.files.length) showMobileStep('details');
+  });
   ['dragenter', 'dragover'].forEach((name) => dropZone.addEventListener(name, (event) => { event.preventDefault(); dropZone.classList.add('is-dragging'); }));
   ['dragleave', 'drop'].forEach((name) => dropZone.addEventListener(name, (event) => { event.preventDefault(); dropZone.classList.remove('is-dragging'); }));
   dropZone.addEventListener('drop', (event) => {
