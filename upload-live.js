@@ -48,13 +48,11 @@
     if (clear) { fileInput.value = ''; sharedFiles = []; }
     renderSelection();
   };
-  const openMobileForm = (kind = 'mixed', openPicker = false, browseKinds = false) => {
+  const openMobileForm = (kind = 'mixed', openPicker = false) => {
     if (!mobileStandalone) return;
-    if (!browseKinds) {
-      setSelectedKind(kind);
-      titleField.value = ''; dateField.value = ''; noteField.value = ''; locationField.value = '';
-      say(status, kind === 'other' ? 'Write a little envelope note, with or without an attachment.' : 'Choose one or a whole batch of photos, videos, and voice notes.');
-    }
+    setSelectedKind(kind);
+    titleField.value = ''; dateField.value = ''; noteField.value = ''; locationField.value = '';
+    say(status, kind === 'other' ? 'Write a little envelope note, with or without an attachment.' : 'Choose one or a whole batch of photos, videos, and voice notes.');
     resumeDraft.hidden = true;
     showMobileView('form');
     if (openPicker && kind !== 'other') fileInput.click();
@@ -187,7 +185,7 @@
     const kind = button.dataset.mobileAdd || 'mixed';
     openMobileForm(kind, button.hasAttribute('data-open-picker'));
   }));
-  document.querySelector('[data-mobile-browse]')?.addEventListener('click', () => { setSelectedKind('photo'); openMobileForm('photo', false, true); });
+  document.querySelector('[data-mobile-browse]')?.addEventListener('click', () => openMobileForm('photo'));
   document.querySelector('[data-mobile-home]')?.addEventListener('click', () => {
     resumeDraft.hidden = !hasDraft();
     showMobileView('home');
