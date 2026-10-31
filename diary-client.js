@@ -16,6 +16,7 @@
   const client = configured
     ? window.supabase.createClient(config.supabaseUrl, config.publishableKey)
     : null;
+  const missingLocationColumn = (error) => /(?:column|schema cache).{0,80}\blocation\b|\blocation\b.{0,80}(?:column|schema cache|does not exist)/i.test(`${error?.message || ''} ${error?.details || ''}`);
 
   const requireConfigured = () => {
     if (!client) throw new Error('The private diary backend has not been connected yet. Follow backend/SETUP.md to finish setup.');
@@ -222,6 +223,7 @@
       file_size: file.size,
       created_by: session.user.id,
     };
+    if (metadata.location?.trim()) row.location = metadata.location.trim();
 
     const insertRow = async () => {
       try { return await supabaseClient.from('memories').insert(row).select('id').single(); }
@@ -259,6 +261,7 @@
     }
     if (result.error) {
       await storage.remove([storagePath]);
+      if (metadata.location?.trim() && missingLocationColumn(result.error)) throw new Error('The diary database needs its optional-location update first. Run the location migration in the main website repository, then try this place name again. Your file was not kept.');
       throw result.error;
     }
     return result.data;

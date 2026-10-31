@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#090d1c" />
     <title>Add a memory · Our little diary</title>
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" href="/icons/diary-icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/icons/diary-icon-180.png" />
     <link rel="stylesheet" href="styles.css" />
     <link rel="stylesheet" href="archive.css" />
     <link rel="stylesheet" href="uploader-theme.css" />
@@ -12,6 +15,7 @@
     <script src="https://cdn.jsdelivr.net/npm/tus-js-client@4.3.1/dist/tus.min.js" defer></script>
     <script src="diary-config.js" defer></script>
     <script src="diary-client.js" defer></script>
+    <script src="pwa.js" defer></script>
     <script src="upload-live.js" defer></script>
   </head>
   <body class="upload-preview-page uploader-site-page">
@@ -31,6 +35,8 @@
           <p class="upload-shell__subtitle">to our little diary</p>
           <span class="upload-heading__rule" aria-hidden="true"><i>♥</i></span>
           <p>Choose a little piece of us to keep close.</p>
+          <p class="pwa-status" id="pwa-status" role="status" aria-live="polite"></p>
+          <button class="pwa-install" id="pwa-install" type="button" hidden>install app</button>
         </div>
       <form class="upload-card" id="memory-upload-form" hidden>
         <div class="upload-categories" role="group" aria-label="Choose memory type">
@@ -39,6 +45,7 @@
           <button class="upload-category" type="button" data-kind="voice" aria-pressed="false"><span aria-hidden="true">🎙️</span>voice note</button>
           <button class="upload-category" type="button" data-kind="other" aria-pressed="false"><span aria-hidden="true">💌</span>little thing</button>
         </div>
+        <button class="upload-mixed-mode" id="mixed-upload" type="button" aria-pressed="false">＋ choose a mix of photos, videos &amp; voice notes</button>
         <label class="upload-drop" id="upload-drop" for="memory-files">
           <span class="upload-drop__icon" aria-hidden="true">☁</span>
           <strong>Choose files or drop them here</strong>
@@ -49,6 +56,7 @@
           <label class="upload-field">when was it?<input type="date" name="memory-date" /></label>
           <label class="upload-field">give it a little name<input type="text" name="memory-title" maxlength="80" placeholder="Our movie night, the cat filter…" /></label>
           <label class="upload-field" style="grid-column: 1 / -1;">a note for later<textarea name="memory-note" maxlength="280" placeholder="What do you want us to remember about this? "></textarea></label>
+          <label class="upload-field upload-location-field">where was it? <span class="upload-location-wrap"><input type="text" name="memory-location" maxlength="100" autocomplete="off" placeholder="A place, city, or our little café · optional" /><small>Place name only. This never asks for GPS.</small></span></label>
         </div>
         <div class="upload-selection" id="upload-selection" aria-live="polite">No files picked yet.</div>
         <div class="upload-actions">
