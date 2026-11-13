@@ -259,6 +259,7 @@
     try { files.forEach(validate); } catch (error) { return say(status, error.message, true); }
     const saveButton = form.querySelector('.upload-save'); saveButton.disabled = true;
     let saved = 0;
+    let returnToDiaryUrl = '';
     try {
       for (const [index, file] of files.entries()) {
         const title = titleField.value.trim() || file.name.replace(/\.[^.]+$/, '');
@@ -294,14 +295,20 @@
         saved += 1;
       }
       if (saved && selectedKind === 'mixed') { fileInput.value = ''; fileInput.files = new DataTransfer().files; sharedFiles = []; renderSelection(); }
-      say(status, `${saved} ${saved === 1 ? 'memory is' : 'memories are'} safely in the diary. The main diary may ask you to sign in there separately.`);
+      if (archiveUrl) {
+        returnToDiaryUrl = archiveUrl;
+        say(status, `${saved} ${saved === 1 ? 'memory is' : 'memories are'} safely in the diary. Taking you back now…`);
+      } else {
+        say(status, `${saved} ${saved === 1 ? 'memory is' : 'memories are'} safely in the diary.`);
+      }
       if (mobileStandalone) await renderRecentMemories();
     } catch (error) {
       if (saved && sharedFiles.length) {
         const remaining = files.slice(saved); const transfer = new DataTransfer(); remaining.forEach((file) => transfer.items.add(file)); fileInput.files = transfer.files; renderSelection();
       }
       say(status, `${saved ? `${saved} saved. ` : ''}${error.message || 'The upload could not be completed.'}`, true);
-    } finally { saveButton.disabled = false; }
+    } finally { saveButton.disabled = Boolean(returnToDiaryUrl); }
+    if (returnToDiaryUrl) window.setTimeout(() => window.location.assign(returnToDiaryUrl), 1200);
   });
   signOut.addEventListener('click', async () => { await window.DiaryClient.signOut(); location.reload(); });
   if (!window.DiaryClient.configured) say(authStatus, 'Add the Supabase project URL and publishable key to diary-config.js to connect private uploads.', true);
